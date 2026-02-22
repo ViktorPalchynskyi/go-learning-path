@@ -5,6 +5,7 @@ import (
 )
 
 func main() {
+	fmt.Println("Lesson 1")
 	fmt.Println("Pomodoro Timer v0.1")
 
 	for i := 1; i < 31; i++ {

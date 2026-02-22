@@ -11,9 +11,9 @@ func main()  {
 	task1 := NewTask("1", "Study Go lesson 1")
 	task2 := NewTask("2", "Plan traning")
 
-	fmt.Printf("is task 1 over %b", task1.IsCompleted())
+	fmt.Printf("is task 1 over %v\n", task1.IsCompleted())
 	task2.Complete()
-	fmt.Printf("is task 2 over %b", task2.IsCompleted())	
+	fmt.Printf("is task 2 over %v\n", task2.IsCompleted())	
 }
 
 type Task struct {
