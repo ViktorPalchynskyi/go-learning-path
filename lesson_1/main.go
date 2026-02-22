@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func main() {
 	fmt.Println("Pomodoro Timer v0.1")
@@ -10,6 +12,7 @@ func main() {
 	}
 
 	fmt.Println(divide(1, 0))
+	fmt.Println(mibutesToPomodoros(60))
 }
 
 func fizzBuzz(n int) string {
@@ -30,4 +33,15 @@ func divide(a, b float64) (float64, error)  {
 	}
 
 	return a / b, nil
+}
+
+func mibutesToPomodoros(minutes int) (sessions int, breackTime int) {
+	const workDuration = 25
+	const breackDuration = 5
+
+	totalSessions := workDuration + breackDuration
+	sessions = minutes / totalSessions
+	breackTime = minutes % totalSessions
+
+	return
 }
