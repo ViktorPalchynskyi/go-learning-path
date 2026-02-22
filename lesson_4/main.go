@@ -24,3 +24,10 @@ func resetTaskPtr(t *models.Task)  {
 	t.Completed = !t.Completed
 }
 
+func getTaskTitle(t *models.Task) string {
+	if t.Title == "" {
+		return "untitled"
+	}
+
+	return t.Title
+}
