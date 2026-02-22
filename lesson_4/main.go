@@ -14,6 +14,24 @@ func main() {
 	fmt.Println(task1.Completed)
 	resetTaskPtr(task1)
 	fmt.Println(task1.Completed)
+
+	tasks := []*models.Task{
+		models.NewTask("1", "task 1"),
+		models.NewTask("2", "task 2"),
+		models.NewTask("3", "task 3"),
+		models.NewTask("4", "task 4"),
+		models.NewTask("5", "task 5"),
+	}
+
+	completeAll(tasks)
+
+	fmt.Println(tasks[0].Completed)
+}
+
+func completeAll(tasks []*models.Task)  {
+	for _, t := range tasks {
+		t.Complete()
+	}
 }
 
 func resetTask(t models.Task)  {

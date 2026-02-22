@@ -24,3 +24,8 @@ func (t *Task) SafeTitle() string{
 
 	return t.Title
 }
+
+
+func (t *Task) Complete()  {
+	t.Completed = true
+}
