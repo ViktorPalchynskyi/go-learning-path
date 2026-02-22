@@ -59,6 +59,7 @@ const (
 type Session struct {
 	BaseEntity
 	TaskID string
+	StartTime time.Time
 	EndTime time.Time
 	Duration time.Duration
 	Type SessionType 
