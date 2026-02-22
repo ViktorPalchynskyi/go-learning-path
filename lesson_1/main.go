@@ -8,6 +8,8 @@ func main() {
 	for i := 1; i < 31; i++ {
 		fmt.Printf("number %d is %s\n", i, fizzBuzz(i))
 	}
+
+	fmt.Println(divide(1, 0))
 }
 
 func fizzBuzz(n int) string {
@@ -20,4 +22,12 @@ func fizzBuzz(n int) string {
 	}
 
 	return ""
+}
+
+func divide(a, b float64) (float64, error)  {
+	if (b == 0) {
+		return 0, fmt.Errorf("0 division error")
+	}
+
+	return a / b, nil
 }
