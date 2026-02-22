@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"study-go/models"
+
+	"github.com/google/uuid"
 )
 
 func main() {
@@ -64,3 +66,29 @@ func (i *InMemoryTaskRepo) Save(task *models.Task) error {
 }
 
 var _ TaskRepository = (*InMemoryTaskRepo)(nil)
+
+type TaskService struct {
+    repo TaskRepository
+}
+
+func NewTaskService(repo TaskRepository) *TaskService {
+    return &TaskService{repo: repo}
+}
+
+func (s *TaskService) CreateTask(title string) (*models.Task, error) {
+    if title == "" {
+        return nil, models.ErrInvalidTitle
+    }
+
+    newTask := models.NewTask(uuid.New().String(), title)
+
+    if err := s.repo.Save(newTask); err != nil {
+        return nil, fmt.Errorf("saving task: %w", err)
+    }
+
+    return newTask, nil
+}
+
+func (s *TaskService) GetTask(id string) (*models.Task, error){
+    return s.repo.FindById(id)
+}
