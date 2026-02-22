@@ -26,9 +26,19 @@ func main() {
 	}
 
 	store := make(map[string]*models.Task)
-	store["task1"] = task1
-	store["task2"] = task2
-	store["task3"] = task3
+	store[task1.ID] = task1
+	store[task2.ID] = task2
+	store[task3.ID] = task3
+
+	if t, ok := store[task1.ID]; !ok {
+		fmt.Printf("error %v", t)
+	}
+
+	delete(store, task1.ID)
+
+	for id, t := range store {
+		fmt.Printf("%s: %s\n", id, t.Title)
+	}
 }
 
 func filterByCompled(tasks []*models.Task, completed bool) []*models.Task{
