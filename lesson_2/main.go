@@ -39,3 +39,35 @@ func (t *Task) Complete()  {
 func (t *Task) IsCompleted() bool {
 	return t.Completed
 }
+
+type SessionType string
+
+const (
+	WorkSession SessionType = "work"
+	BreakSession SessionType = "break"
+)
+
+type Session struct {
+	ID string
+	TaskID string
+	StartTime time.Time
+	EndTime time.Time
+	Duration time.Duration
+	Type SessionType 
+}
+
+func NewWorkSession(id, taskId string, duration time.Duration) *Session{
+	return &Session{
+		ID: id,
+		TaskID: taskId,
+		Duration: duration,
+	}
+}
+
+func (s *Session) Finish(){
+	s.EndTime = time.Now()
+}
+
+func (s *Session) IsRunning() bool{
+	return s.EndTime.IsZero()
+}
