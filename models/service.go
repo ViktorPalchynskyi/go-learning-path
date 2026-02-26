@@ -1,6 +1,9 @@
 package models
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/google/uuid"
+)
 
 var _ TaskRepository = (*InMemoryTaskRepo)(nil)
 
@@ -14,6 +17,15 @@ func (s *TaskService) GetTask(id string)(*Task, error) {
 		return nil, fmt.Errorf("getting task: %s: %w", id, err)
 	}
 
+	return task, nil
+}
+
+func (s *TaskService) CreateTask(title string) (*Task, error) {                                                                                                                             
+	task := NewTask(uuid.New().String(), title)                                                                                                                                           
+	err := s.repo.Save(task)
+	if err != nil {
+			return nil, fmt.Errorf("creating task: %w", err)
+	}
 	return task, nil
 }
 

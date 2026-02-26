@@ -18,6 +18,13 @@ func main() {
 	}
 
 	fmt.Printf("task: %+v\n", task)
+
+	task, err = taskService.CreateTask("")
+	err = models.ValidateTask(task)
+	var ve *models.ValidationError
+	if errors.As(err, &ve) {
+		fmt.Printf("validation error: %s: %s\n", ve.Field, ve.Message)
+	}
 }
 
 var (

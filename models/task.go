@@ -1,6 +1,9 @@
 package models
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 var (
 	ErrTaskNotFound = errors.New("task not found")
@@ -28,4 +31,21 @@ func (t *Task) SafeTitle() string{
 
 func (t *Task) Complete()  {
 	t.Completed = true
+}
+
+type ValidationError struct {
+	Field string
+	Message string
+}
+
+func (e *ValidationError) Error() string {
+	return fmt.Sprintf("%s: %s", e.Field, e.Message)
+}
+
+func ValidateTask(t *Task) error {
+	if t.Title == "" {
+		return &ValidationError{Field: "title", Message: "title is required"}
+	}
+
+	return nil
 }
