@@ -1,0 +1,30 @@
+package main
+
+import (
+	"errors"
+	"fmt"
+	"strings"
+)
+
+func main() {
+	fmt.Println("Lesson 6")
+}
+
+var (
+	ErrTaskNotFound = errors.New("task not found")
+	ErrTaskCompleted = errors.New("task completed")
+	ErrInvalidTitle = errors.New("invalid title")
+	ErrSessionNotFound = errors.New("session not found")
+)
+
+func validateTitle(title string) error {
+	if strings.TrimSpace(title) == "" {
+		return fmt.Errorf("%w: title is required", ErrInvalidTitle)
+	}
+
+	if len(title) > 200 {
+		return fmt.Errorf("%w: title must be less than 200 characters", ErrInvalidTitle)
+	}
+
+	return nil
+}
