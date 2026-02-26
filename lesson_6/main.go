@@ -4,10 +4,20 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"study-go/models"
 )
 
 func main() {
 	fmt.Println("Lesson 6")
+
+	repo := models.NewInMemoryTaskRepo()
+	taskService := models.NewTaskService(repo)
+	task, err := taskService.GetTask("1")
+	if err != nil {
+		fmt.Printf("error getting task: %v\n", err)
+	}
+
+	fmt.Printf("task: %+v\n", task)
 }
 
 var (
