@@ -18,18 +18,31 @@ func main()  {
 	}
 
 	var wg sync.WaitGroup
+	sts := NewSaveTaskStore()
 
 	for _, t := range tasks {
 		wg.Add(1)
-		go func (task *models.Task)  {
+		go func(task *models.Task) {
 			defer wg.Done()
-			time.Sleep(100 * time.Microsecond)
+			sts.Add(task)
 			task.Complete()
 		}(t)
 	}
+
+	for range 3 {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			sts.GetAll()
+		}()
+	}
+
 	wg.Wait()
 
 	fmt.Println("All tasks completed")
+	for _, task := range sts.GetAll() {
+		fmt.Printf("Task: %s - %s - completed: %v\n", task.ID, task.Title, task.Completed)
+	}
 	for _, id := range(ids) {
 		go fetchTask(id, cn)
 	}
@@ -80,4 +93,37 @@ func fetchWithTimeout(id string, timeout time.Duration) (*models.Task, error){
 		fmt.Println("Timeout")
 		return nil, errors.New("Timeout")
 	}
+}
+
+type SaveTaskStore struct {
+	tasks map[string]*models.Task
+	mu    sync.RWMutex
+}
+
+func NewSaveTaskStore() *SaveTaskStore {
+	return &SaveTaskStore{tasks: make(map[string]*models.Task)}
+}
+
+func (sts *SaveTaskStore) Add(task *models.Task) {
+	sts.mu.Lock()
+	defer sts.mu.Unlock()
+	sts.tasks[task.ID] = task
+}
+
+func (sts *SaveTaskStore) Delete(id string) {
+	sts.mu.Lock()
+	defer sts.mu.Unlock()
+	delete(sts.tasks, id)
+}
+
+func (sts *SaveTaskStore) Get(id string) *models.Task {
+	sts.mu.RLock()
+	defer sts.mu.RUnlock()
+	return sts.tasks[id]
+}
+
+func (sts *SaveTaskStore) GetAll() map[string]*models.Task {
+	sts.mu.RLock()
+	defer sts.mu.RUnlock()
+	return sts.tasks
 }
