@@ -3,15 +3,17 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/username/lesson_10/internal/repository"
 	"github.com/username/lesson_10/internal/service"
 )
 
 type ErrorResponse struct {
-	Error string
+	Error string `json:"error"`
 }
 
 type CreateTaskRequest struct {
@@ -19,11 +21,11 @@ type CreateTaskRequest struct {
 }
 
 type Handler struct {
-	service service.TaskService
+	service *service.TaskService
 }
 
-func NewHandler() *Handler {
-	return &Handler{}
+func NewHandler(service *service.TaskService) *Handler {
+	return &Handler{service: service}
 }
 
 func (h *Handler) GetTask(w http.ResponseWriter, r *http.Request) {
@@ -34,12 +36,18 @@ func (h *Handler) GetTask(w http.ResponseWriter, r *http.Request) {
 	task, err := h.service.GetTask(ctx, id)
 	if err != nil {
 		if ctx.Err() == context.DeadlineExceeded {
-			writeJSON(w, 500, ErrorResponse{Error: "invalid JSON"})
+			writeJSON(w, 504, ErrorResponse{Error: "request timeout"})
 			return
 		}
+		if errors.Is(err, repository.ErrNotFound) {
+			writeJSON(w, 404, ErrorResponse{Error: "task not found"})
+			return
+		}
+		writeJSON(w, 500, ErrorResponse{Error: "internal error"})
+		return
 	}
 
-	writeJSON(w, 202, task)
+	writeJSON(w, 200, task)
 }
 
 func (h *Handler) CreateTask(w http.ResponseWriter, r *http.Request) {
@@ -55,12 +63,14 @@ func (h *Handler) CreateTask(w http.ResponseWriter, r *http.Request) {
 	task, err := h.service.CreateTask(ctx, req.Title)
 	if err != nil {
 		if ctx.Err() == context.DeadlineExceeded {
-			writeJSON(w, 500, ErrorResponse{Error: "invalid JSON"})
+			writeJSON(w, 504, ErrorResponse{Error: "request timeout"})
 			return
 		}
+		writeJSON(w, 500, ErrorResponse{Error: "internal error"})
+		return
 	}
 
-	writeJSON(w, 202, task)
+	writeJSON(w, 201, task)
 }
 
 func writeJSON(w http.ResponseWriter, status int, data any)  {

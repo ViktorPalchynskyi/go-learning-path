@@ -1,9 +1,9 @@
 package domain
 
 type Task struct {
-	ID        string
-	Title     string
-	Completed bool
+	ID        string `json:"id"`
+	Title     string `json:"title"`
+	Completed bool   `json:"completed"`
 }
 
 func NewTask(id string, title string) *Task{
