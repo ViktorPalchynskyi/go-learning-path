@@ -11,18 +11,25 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/kelseyhightower/envconfig"
 	"github.com/username/lesson_13/db"
 	"github.com/username/lesson_13/internal/handler"
 	"github.com/username/lesson_13/internal/repository"
 	"github.com/username/lesson_13/internal/service"
 )
 
+type Config struct {
+	DatabaseURL string `envconfig:"DATABASE_URL" required:"true"`
+	Port string `envconfig:"PORT" default:"8082"`
+}
+
 func main()  {
 	fmt.Println("Lesson 13")
 
 	ctx := context.Background() 
-	connString := "postgres://viktor:secret@localhost:5433/golearn"
-	pool, err := db.NewPool(ctx, connString)
+	var cfg Config
+	envconfig.MustProcess("", &cfg)
+	pool, err := db.NewPool(ctx, cfg.DatabaseURL)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -51,7 +58,7 @@ func main()  {
 		})
 	})
 
-	svr := &http.Server{Addr: ":8082", Handler: r}
+	svr := &http.Server{Addr: ":" + cfg.Port, Handler: r}
 
 	go func ()  {
 		if err := svr.ListenAndServe(); err != nil && err != http.ErrServerClosed {
