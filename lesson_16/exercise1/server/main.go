@@ -57,13 +57,25 @@ func (s *server) ListUsers(req *pb.ListUsersRequest, stream pb.UserService_ListU
 	return nil
 }
 
+func loggingInterceptor(
+	ctx context.Context,
+	req interface{},
+	info *grpc.UnaryServerInfo,
+	handler grpc.UnaryHandler,
+) (interface{}, error) {
+	start := time.Now()
+	resp, err := handler(ctx, req)
+	log.Printf("method=%s duration=%s err=%v", info.FullMethod, time.Since(start), err)
+	return resp, err
+}
+
 func main() {
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	s := grpc.NewServer()
+	s := grpc.NewServer(grpc.UnaryInterceptor(loggingInterceptor))
 	pb.RegisterUserServiceServer(s, &server{
 		users: make(map[int64]*pb.User),
 	})
