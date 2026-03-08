@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"io"
 	"log"
 
 	"exercise1/pb"
@@ -38,5 +39,21 @@ func main() {
 	_, err = client.GetUser(ctx, &pb.GetUserRequest{Id: 999})
 	if err != nil {
 		log.Printf("Expected error: %v", err)
+	}
+
+	stream, err := client.ListUsers(ctx, &pb.ListUsersRequest{PageSize: 10})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Streaming users:")
+	for {
+		u, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("  stream: id=%d name=%s email=%s", u.Id, u.Name, u.Email)
 	}
 }

@@ -16,7 +16,12 @@ message CreateUserRequest{
     string email = 2;
 }
 
+message ListUsersRequest {
+    int32 page_size = 1;
+}
+
 service UserService {
     rpc GetUser(GetUserRequest) returns (User);
     rpc CreateUser(CreateUserRequest) returns (User);
+    rpc ListUsers(ListUsersRequest) returns (stream User);
 }

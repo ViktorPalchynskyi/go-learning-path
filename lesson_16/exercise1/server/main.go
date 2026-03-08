@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 	"sync"
+	"time"
 
 	"exercise1/pb"
 
@@ -37,6 +38,23 @@ func (s *server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.User,
 		return nil, status.Errorf(codes.NotFound, "user %d not found", req.Id)
 	}
 	return user, nil
+}
+
+func (s *server) ListUsers(req *pb.ListUsersRequest, stream pb.UserService_ListUsersServer) error {
+	s.mu.Lock()
+	users := make([]*pb.User, 0, len(s.users))
+	for _, u := range s.users {
+		users = append(users, u)
+	}
+	s.mu.Unlock()
+
+	for _, u := range users {
+		time.Sleep(100 * time.Millisecond)
+		if err := stream.Send(u); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func main() {
